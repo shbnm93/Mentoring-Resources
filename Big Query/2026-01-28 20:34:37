@@ -1,0 +1,276 @@
+select *  from `certain-gearbox-483713-j3.wisdom_pets.products`;
+
+select *  from `wisdom_pets.products`;
+select *  from `wisdom_pets.customers`;
+select *  from `wisdom_pets.sales`;
+
+-- basic order by clause
+select product_id, product_name, retail_price from `wisdom_pets.products`
+order by retail_price;
+
+-- sort products from high to low prices
+select product_id, product_name, retail_price from `wisdom_pets.products`
+order by retail_price desc;
+
+-- multilevel sort
+-- sort category products from high to low
+select product_id, product_name,category_name, retail_price from `wisdom_pets.products`
+order by category_name,retail_price desc;
+
+
+
+-- which products from each category have the highest discount percentage?
+select
+  product_id,
+  product_name,
+  category_name,
+  wholesale_discount_percentage
+from `wisdom_pets.products`
+order by
+  category_name,
+  wholesale_discount_percentage desc;
+
+
+
+-- where clause
+-- filtering rows using conditional logic
+
+-- which products are exactly $100?
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where retail_price = 100;
+
+
+-- where clause with strings
+-- exact string match on product name
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where product_name = 'Medicated Dog Shampoo';
+
+-- not euqal filter !=
+-- category not equal to supplement
+select
+  product_id,
+  product_name,
+  category_name
+from `wisdom_pets.products`
+where category_name != 'Supplement';
+
+-- another choice
+select
+  product_id,
+  product_name,
+  category_name
+from `wisdom_pets.products`
+where not category_name = 'Supplement';
+
+
+-- alternative not equal to : <>
+-- != and <> can both be used
+select
+  product_id,
+  product_name,
+  category_name
+from `wisdom_pets.products`
+where category_name <> 'Supplement';
+
+
+
+-- what is the most expensive product in the care category?
+select
+  product_id,
+  product_name,
+  category_name,
+  retail_price
+from `wisdom_pets.products`
+where category_name = 'Care'
+order by retail_price desc
+limit 1;
+
+
+-- where clause
+-- inequalities , between, and IN  
+
+-- less-than inquality: <
+-- product less than 6$
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where retail_price < 6
+order by retail_price desc;
+
+-- less than or equal to:   <=
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where retail_price <= 6
+order by retail_price desc;
+
+
+-- greater than inequality: >
+-- products greater than $55:
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where retail_price > 55
+order by retail_price desc;
+
+
+
+-- greater than or equal to: >=
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where retail_price >= 55
+order by retail_price desc;
+
+
+-- between clause
+-- products between $15 and $65
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where retail_price >= 15 and retail_price <= 65
+order by retail_price desc;
+
+
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where retail_price between 15 and 65
+order by retail_price desc;
+
+
+-- common between mistakeeeeeeeeeeee
+-- putting the larger value first
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where retail_price between 65 and 15
+order by retail_price desc;
+-- so it is not true
+
+
+-- not between clause
+-- products not between $0 and $75
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where retail_price not between 0 and 75
+order by retail_price desc;
+
+
+
+-- second alternatif
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where not retail_price between 0 and 75
+order by retail_price desc;
+
+-- deneme
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+WHERE retail_price < 50 and retail_price > 15
+order by retail_price desc;
+
+
+
+-- IN clause for multiple values
+-- products with specific products IDs
+-- 100013,100041,100051
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where product_id IN (100013,100041,100051)
+order by product_id;
+
+
+-- IN clause for string values
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where product_name IN ('Strong Joints Cat Supplement','Strong Joints Dog Supplement');
+
+
+-- NOT IN clause
+-- products not in care and supplements
+select
+  product_id,
+  product_name,
+  category_name,
+  retail_price
+from `wisdom_pets.products`
+where category_name NOT IN ('Care','Supplement')
+order by category_name;
+
+-- alternatif
+select
+  product_id,
+  product_name,
+  category_name,
+  retail_price
+from `wisdom_pets.products`
+where not category_name IN ('Care','Supplement')
+order by category_name;
+
+
+-- which care products have a wholesale discount percentage between 20% and 30%?
+select
+  product_id,
+  product_name,
+  category_name,
+  retail_price,
+  wholesale_discount_percentage
+from `wisdom_pets.products`
+where category_name = 'Care'
+and wholesale_discount_percentage between 20 and 30;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
