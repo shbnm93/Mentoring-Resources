@@ -1,0 +1,129 @@
+public link:
+https://console.cloud.google.com/bigquery?sq=676844025892:785475099eb4426eadd7810b10453bf6
+
+
+-- fuzzy string matching
+-- which products contain the word "Dog"?
+-- wildcard characters : %
+-- like operator 
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where product_name like '%Dog%';
+
+
+-- removing leading wildcard %
+-- this matches products starting with Dog
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where product_name like 'Dog%';
+
+
+-- remove trailing wildcard %
+-- this matches products ending with Dog
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where product_name like '%Dog';
+
+
+-- remove both wildcards %
+-- this exactly matches Dog only
+-- acts as the standard = operator
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where product_name like 'Dog';
+
+
+-- like case sensitivity
+-- case sensitivity matters for like
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where product_name like '%dog%';
+
+
+-- upper function
+-- we can use upper and use all capitals
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where upper(product_name) like '%DOG%';
+
+
+-- lower function
+-- we can use lower and use all lowercase
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where lower(product_name) like '%dog%';
+
+
+-- LIKE ANY operator
+-- we can use like any similarly to IN   
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where product_name like any('%Dog%', '%Cat%');
+
+-- upper and lower in like any
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where lower(product_name) like any ('%dog%', '%cat%');
+
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where UPPER(product_name) like any ('%DOG%', '%CAT%');
+
+
+-- find all products that contain "Teeth" or "Tooth" and any "Coat" related products.
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where product_name like any ('%Teeth%', '%Tooth%', '%Coat%');
+
+
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where product_name like '%Teeth%';
+
+
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where product_name like '%Tooth%';
+
+
+
+
