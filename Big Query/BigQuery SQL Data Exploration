@@ -1,0 +1,500 @@
+select * from `certain-gearbox-483713-j3.wisdom_pets.products`;
+
+
+select * from `wisdom_pets.products`;
+
+-- basic order by clasue
+select product_id, product_name, retail_price from `wisdom_pets.products`
+order by retail_price;
+
+-- sort products from high to low prices
+select product_id, product_name, retail_price from `wisdom_pets.products`
+order by retail_price desc;
+
+-- multilevel sort
+-- sort category products from high to low
+select product_id, product_name,category_name, retail_price from `wisdom_pets.products`
+order by category_name, retail_price desc;
+
+
+-- which products from each category have the highest discount percentage?
+select
+  product_id,
+  product_name,
+  category_name,
+  retail_price,
+  wholesale_discount_percentage
+from `wisdom_pets.products`
+order by 
+  category_name,
+  wholesale_discount_percentage desc;
+
+
+-- where clause
+-- filtering rows using conditional logic
+
+-- which products are exactly $100?
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where retail_price = 100;
+
+
+-- where clause with strings
+-- exact string match on product name
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where product_name = 'Medicated Dog Shampoo';
+
+
+-- not-equal filter !=
+-- catgory not equal to supplement
+select
+  product_id,
+  product_name,
+  category_name
+from `wisdom_pets.products`
+where category_name != 'Supplement';
+
+-- alternative not equal to : <>
+-- != and <> can both be used
+select
+  product_id,
+  product_name,
+  category_name
+from `wisdom_pets.products`
+where category_name <> 'Supplement';
+
+
+-- what is the most expensive product in the care category?
+select
+  product_id,
+  product_name,
+  retail_price,
+  category_name
+from `wisdom_pets.products`
+where category_name = 'Care'
+order by retail_price desc;
+
+
+-- where clause
+-- inequalities , between, and IN  
+
+-- less-than inequality:   <
+-- product less than $6
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where retail_price < 6
+order by retail_price desc;
+
+
+-- less than or equal to:    <=
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where retail_price <= 6
+order by retail_price desc;
+
+
+-- greater-than inequality: >
+-- products greater than $55
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where retail_price > 55
+order by retail_price desc;
+
+-- greater than or equal to:  >=
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where retail_price >= 55
+order by retail_price desc;
+
+
+
+-- between clause
+-- products between $15 and $65
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where retail_price between 15 and 65
+order by retail_price;
+
+
+
+-- common between mistakeeeeeeeeeeee
+-- putting the larger value first
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where retail_price between 65 and 15
+order by retail_price;
+-- so it is not true
+
+
+-- not between clause
+-- products not between $0 and $75
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where retail_price not between 0 and 75
+order by retail_price;
+
+
+-- IN clause for multiple values
+-- products with specific product IDs
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where product_id IN (100013, 100041, 100051)
+order by product_id;
+
+
+
+-- IN clause for string values
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where product_name IN (
+  'Strong Joints Cat Supplement',
+  'Strong Joints Dog Supplement'
+);
+
+
+
+
+
+
+
+
+
+-- NOT IN clause
+-- products not in care and supplements
+select
+  product_id,
+  product_name,
+  category_name,
+  retail_price
+from `wisdom_pets.products`
+where category_name NOT IN (
+  'Care',
+  'Supplement'
+)
+order by category_name;
+
+
+-- which Care products have a wholesale discount percentage between 20% and 30%?
+select
+  product_id,
+  product_name,
+  retail_price,
+  category_name,
+  wholesale_discount_percentage
+from `wisdom_pets.products`
+where
+  category_name = 'Care'
+  and wholesale_discount_percentage between 20 and 30;
+
+-- fuzzy string matching
+-- approximate string matches
+-- which products contain the word "Dog"?
+-- like operator
+-- wildcard characters: %
+SELECT
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where product_name like '%Dog%';
+
+
+
+-- remove leading wildcard %
+-- this matches products starting with Dog
+SELECT
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where product_name like 'Dog%';
+
+
+-- remove trailing wildcard %
+-- this matches products ending with Dog
+SELECT
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where product_name like '%Dog';
+
+
+-- remove both wildcards %
+-- this exactly matches Dog only
+-- acts as the standard = operator
+SELECT
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where product_name like 'Dog';
+
+
+-- LIKE case sensitivity
+-- case sensitivity matters for LIKE
+SELECT
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where product_name like '%dog%';
+
+-- upper function
+-- we can use upper and use all capitals
+SELECT
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where upper(product_name) like '%DOG%';
+
+
+-- lower function
+-- we can use lower and use all lowercase
+SELECT
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where lower(product_name) like '%dog%';
+
+
+-- LIKE ANY operator
+-- we can use like any similarly to IN
+SELECT
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where product_name like any ('%Dog%', '%Cat%');
+
+-- find all products that contain "Teeth" or "Tooth" and any "Coat" related products.
+select
+  product_id,
+  product_name,
+  retail_price
+from `wisdom_pets.products`
+where product_name like any ('%Teeth%', '%Tooth%', '%Coat%');
+
+
+-- COUNT function
+-- total records and unique counts
+
+-- total records with count(*)
+-- how many rows in the products table?
+select count(*)
+from `wisdom_pets.products`;
+
+-- we can use alias for remaining columns
+-- how many rows in the products table?
+select
+  count(*) as row_count
+from `wisdom_pets.products`;
+
+
+
+-- count(*) and count(1)
+-- count(*) is the database standard (ANSI)
+-- count(1) is effectively the same
+-- no difference in actual outputs
+-- both functions count total rows, including null records
+
+
+-- count of specific column
+-- count non-null rating values
+select
+  count(rating) as rating_count
+from `wisdom_pets.products`;
+-- so NULL records not included in count
+
+-- null records not included in count
+-- check null records for rating
+select
+  product_id,
+  product_name,
+  rating
+from `wisdom_pets.products`
+where rating is null;
+
+
+-- count disctinct for unique values
+-- how many unique rating values are there?
+select
+  count(distinct rating) as unique_ratings
+from `wisdom_pets.products`;
+
+
+-- count distinct and null records
+-- count distinct ignores nulls  
+select
+  product_id,
+  product_name,
+  rating
+from `wisdom_pets.products`
+order by rating;
+
+
+-- let's combine count functions
+-- multiple count functions are also possible
+select
+  count(*) as record_count,
+  count(rating) as rating_count,
+  count(distinct category_name) as unique_category_count,
+  count(distinct rating) as unique_rating_count
+from `wisdom_pets.products`;
+
+
+
+-- count and where clause
+-- count functions can also used with where clause
+select
+  count(*) as record_count,
+  count(rating) as rating_count,
+  count(distinct category_name) as unique_category_count,
+  count(distinct rating) as unique_rating_count
+from `wisdom_pets.products`
+where retail_price <= 6;
+-- and we can see sql order of operations
+-- where clause is executed first  
+-- then count functions are performed
+
+
+-- how many products are in the Care category with a price less than $9?
+select
+  count(*) as product_counts
+from `wisdom_pets.products`
+where 
+  category_name = 'Care'
+  and retail_price < 9;
+
+-- min and max functions
+-- what is the price range of products?
+select
+  min(retail_price) as minimum_price,
+  max(retail_price) as maximum_price
+from `wisdom_pets.products`;
+
+
+
+-- avg function
+-- what is the average wholesale discount percentage?
+select
+  avg(wholesale_discount_percentage) as avg_discount
+from `wisdom_pets.products`;
+
+
+-- round function
+-- round the average wholesale discount percentage to 2 decimal places
+select
+  round(avg(wholesale_discount_percentage),2)  as round_avg_discount
+from `wisdom_pets.products`;
+
+
+-- learn this formula, we will apply math operations:
+-- wholesale_price = retail_price * (1- wholesale_discount_percentage/100) 
+-- now find top five products by wholesale price
+select
+  product_id,
+  product_name,
+  retail_price,
+  wholesale_discount_percentage,
+  round(
+    retail_price * (
+      1 - wholesale_discount_percentage / 100
+    ),2
+  ) as wholesale_price
+from `wisdom_pets.products`
+order by wholesale_price desc
+limit 5;
+
+-- standard deviation function
+-- calculate supplement category summary statistics
+select
+  avg(retail_price) as average_retail_price,
+  stddev(retail_price) as stddev_retail_price,
+  count(distinct product_id) as unique_product_count,
+  avg(rating) as average_rating
+from `wisdom_pets.products`
+where category_name = 'Supplement';
+
+
+-- what are the average and standard deviation of the retail price for all wisdom pet products?
+select
+  avg(retail_price) as average_retail_price,
+  stddev(retail_price) as std_retail_price
+from `wisdom_pets.products`;
+
+
+-- five-star products
+-- show top products with ID, name, retail price, and category
+-- sort output from lowest to highest price
+select
+  product_id,
+  product_name,
+  retail_price,
+  category_name
+from `wisdom_pets.products`
+order by retail_price
+limit 5;
+
+
+-- dog supplements
+-- how many dog supplement products are avaialble?
+-- show average retail price and rating, rounded to the nearest two decimal places
+select
+  count(*) as product_count,
+  round(avg(retail_price),2) as avg_retail_price,
+  round(avg(rating),2)  as avg_rating
+from `wisdom_pets.products`
+where
+  category_name = 'Supplement'
+  and product_name like '%Dog%';
+
+
+-- wholesale products
+-- calculate wholesale price using the discount percentage
+-- sort output from highest to lowest discount amount
+select
+  product_id,
+  product_name,
+  retail_price,
+  wholesale_discount_percentage,
+  retail_price * (1- wholesale_discount_percentage /100) as wholesale_price,
+  retail_price * (wholesale_discount_percentage/100) as discount_amount
+from `wisdom_pets.products`
+order by discount_amount desc;
