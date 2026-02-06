@@ -1,3 +1,6 @@
+public link:
+https://console.cloud.google.com/bigquery?sq=676844025892:81b4ff7ec3654e92a30fcd45569b4ff3
+
 select *  from `certain-gearbox-483713-j3.wisdom_pets.products`;
 
 select *  from `wisdom_pets.products`;
