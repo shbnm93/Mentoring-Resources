@@ -1,0 +1,97 @@
+-- count function
+-- total records with count(*)
+select count(*)
+from `wisdom_pets.products`;
+
+
+-- we can use alias for remaining columns
+-- how many rows in the product table?
+select count(*) as row_count
+from `wisdom_pets.products`;
+
+
+-- count of specific column
+select count(rating) as rating_count
+from `wisdom_pets.products`;
+
+select 
+  product_id,
+  product_name,
+  rating
+from `wisdom_pets.products`
+where rating is null;
+
+
+-- count distinct for unique values
+select count(distinct rating) as unique_ratings
+from `wisdom_pets.products`;
+
+
+
+
+-- count distinct and null records
+select 
+  product_id,
+  product_name,
+  rating
+from `wisdom_pets.products`
+order by rating;
+
+
+-- multiple combine count functions
+select 
+  count(*) as record_count,
+  count(rating) as rating_count,
+  count(distinct category_name) as unique_category_count,
+  count(distinct rating) as unique_rating_count
+from `wisdom_pets.products`;  
+
+
+
+-- count and where clause
+select 
+  count(*) as record_count,
+  count(rating) as rating_count,
+  count(distinct category_name) as unique_category_count,
+  count(distinct rating) as unique_rating_count
+from `wisdom_pets.products`
+where retail_price <= 6; 
+
+
+-- how many products are in the Care category with a price less than $9?
+select
+  count(*) as product_counts
+from `wisdom_pets.products`
+where category_name = 'Care'
+and retail_price < 9;
+
+
+-- min and max functions
+-- what is the price range of products?
+select
+  min(retail_price) as minimum_price,
+  max(retail_price) as maximum_price
+from `wisdom_pets.products`;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
