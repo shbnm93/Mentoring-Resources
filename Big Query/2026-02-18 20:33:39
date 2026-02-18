@@ -1,0 +1,85 @@
+-- avg function
+-- what is the average wholesale discount percentage?
+select 
+  avg(wholesale_discount_percentage) as avg_discount
+from `wisdom_pets.products`;
+
+
+-- round function
+-- round the average wholesale discount percentage to 2 decimal places
+select 
+  round(avg(wholesale_discount_percentage),2) as round_avg_discount
+from `wisdom_pets.products`;
+
+
+-- standard deviation function
+-- calculte supplement category summary statistics
+select
+  avg(retail_price) as average_ratail_price,
+  stddev(retail_price) as stddev_retail_price,
+  count(distinct product_id) as unique_product_count,
+  avg(rating) as average_rating
+from `wisdom_pets.products`
+where category_name = 'Supplement';
+
+
+
+
+-- what are the average and standard deviation of the retail price for all wisdom pet products?
+select
+  avg(retail_price) as average_retail_price,
+  stddev(retail_price) as std_retail_price
+from `wisdom_pets.products`;
+
+
+-- five-star products
+-- show first 5 products with ID, name, retail price, and category
+-- sort output from lowest to highest price
+select
+  product_id,
+  product_name,
+  retail_price,
+  category_name
+from `wisdom_pets.products`
+order by retail_price 
+limit 5;
+
+-- dog supplements
+-- how many dog supplement products are avaialble?
+-- show average retail price and rating, rounded to the nearest two decimal places
+select
+  count(*) as product_count,
+  round(avg(retail_price),2) as avg_retail_price,
+  round(avg(rating),2) as avg_rating
+from `wisdom_pets.products`
+where category_name = 'Supplement' and product_name like '%Dog%';
+
+
+
+-- wholesale products
+-- calculate wholesale price using the discount percentage
+-- sort output from highest to lowest discount amount
+select
+  product_id,
+  product_name,
+  retail_price,
+  wholesale_discount_percentage,
+  retail_price * (1 - wholesale_discount_percentage/100) as wholesale_price,
+  retail_price * (wholesale_discount_percentage/100) as discount_amount
+from `wisdom_pets.products`
+order by retail_price desc;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
