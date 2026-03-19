@@ -1,0 +1,112 @@
+-- data aggregation
+-- basic group by syntax
+-- count the rows for each category name
+select
+  category_name,
+  count(*) as record_count
+from `wisdom_pets.products`
+group by category_name
+order by category_name;
+
+
+-- multiple group by caluclations
+select
+  category_name,
+  count(*) as record_count,
+  avg(retail_price) as average_retail_price,
+  max(rating) as max_rating
+from `wisdom_pets.products`
+group by category_name
+order by category_name;
+
+
+-- having clause
+select
+  category_name,
+  count(*) as record_count,
+  avg(retail_price) as average_retail_price,
+  max(rating) as max_rating
+from `wisdom_pets.products`
+group by category_name
+having average_retail_price < 10
+order by category_name;
+
+
+
+
+-- A very common mistake is to try to use a WHERE clause to perform the same operation.
+select
+  category_name,
+  count(*) as record_count,
+  avg(retail_price) as average_retail_price,
+  max(rating) as max_rating
+from `wisdom_pets.products`
+where average_retail_price < 10
+group by category_name
+order by category_name;
+
+
+select
+  category_name,
+  count(*) as record_count,
+  avg(retail_price) as average_retail_price,
+  max(rating) as max_rating
+from `wisdom_pets.products`
+group by category_name
+having avg(retail_price) < 10
+order by category_name;
+
+
+
+
+select
+  category_name,
+  count(*) as record_count
+from `wisdom_pets.products`
+where retail_price < 10
+group by category_name
+order by category_name;
+
+
+-- multiple-column group by
+select
+  category_name,
+  wholesale_discount_percentage,
+  count(*) as record_count
+from `wisdom_pets.products`
+group by
+  1,2
+order by
+  1,2;
+
+select distinct category_name from `wisdom_pets.products`;
+
+
+
+-- how many products in each category have a rating greater than or equal to 4.5?
+select
+  category_name,
+  count(*) as product_count
+from `wisdom_pets.products`
+where rating >= 4.5
+group by category_name;
+
+
+-- case when statements
+-- assign a segment name for cat/dog products with case when
+select
+  product_id,
+  product_name,
+  case
+    when product_name like '%Cat%' then 'Cat'
+    when product_name like '%Dog%' then 'Dog'
+    else 'Other'
+  end as segment_name
+from `wisdom_pets.products`
+order by segment_name;
+
+
+
+
+
+
