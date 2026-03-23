@@ -1,0 +1,315 @@
+-- data aggregation
+-- basic group by syntax
+-- count the rows for each category name
+select
+  category_name,
+  count(*) as record_count
+from `wisdom_pets.products`
+group by category_name
+order by category_name;
+
+
+-- multiple group by caluclations
+select
+  category_name,
+  count(*) as record_count,
+  avg(retail_price) as average_retail_price,
+  max(rating) as max_rating
+from `wisdom_pets.products`
+group by category_name
+order by category_name;
+
+
+-- having clause
+select
+  category_name,
+  count(*) as record_count,
+  avg(retail_price) as average_retail_price,
+  max(rating) as max_rating
+from `wisdom_pets.products`
+group by category_name
+having average_retail_price < 10
+order by category_name;
+
+
+
+-- A very common mistake is to try to use a WHERE clause to perform the same operation.
+select
+  category_name,
+  count(*) as record_count,
+  avg(retail_price) as average_retail_price,
+  max(rating) as max_rating
+from `wisdom_pets.products`
+where average_retail_price < 10
+group by category_name
+order by category_name;
+-- Because the WHERE is executed prior to the GROUP BY, the BigQuery engine will not have any clue what the calculated average retail price is. 
+-- The HAVING clause, however, is used specifically to filter records from the GROUP BY output. 
+-- But what if we wanted to perform a GROUP BY operation with the WHERE clause to pre-filter our data before they are used in any aggregate calculations? We can definitely do this.
+-- The WHERE clause goes straight after the from and the GROUP BY goes after the WHERE. This actually follows the SQL Order of Operations.
+select
+  category_name,
+  count(*) as record_count
+from `wisdom_pets.products`
+where retail_price < 10
+group by category_name
+order by category_name;
+
+
+
+-- multiple-column group by
+select
+  category_name,
+  wholesale_discount_percentage,
+  count(*) as record_count
+from `wisdom_pets.products`
+group by 
+  category_name,
+  wholesale_discount_percentage
+order by 
+  category_name,
+  wholesale_discount_percentage;
+
+
+-- how many products in each category have a rating greater than or equal to 4.5?
+select
+  category_name,
+  count(*) as product_count
+from `wisdom_pets.products`
+where rating >= 4.5
+group by category_name;
+
+
+-- case when statements
+-- bigquery conditional expressions
+-- let's use case when statement syntax
+-- assign a segment name for cat/dog products with case when
+select
+  product_id,
+  product_name,
+  case 
+    when product_name like '%Cat%' then 'Cat'
+    when product_name like '%Dog%' then 'Dog'
+    else 'Other'
+  end as segment_name
+from `wisdom_pets.products`
+order by segment_name;
+-- else is not required, but it is useful
+-- let's don't use 'else' and you should see what will happen
+select
+  product_id,
+  product_name,
+  case 
+    when product_name like '%Cat%' then 'Cat'
+    when product_name like '%Dog%' then 'Dog'
+  end as segment_name
+from `wisdom_pets.products`
+order by segment_name;
+-- as you see, using 'else' is useful
+-- it will returns null when other conditions not met
+-- we can also write the code like this:
+select
+  product_id,
+  product_name,
+  case 
+    when product_name like '%Cat%' then 'Cat'
+    when product_name like '%Dog%' then 'Dog'
+  end as segment_name
+from `wisdom_pets.products`
+order by segment_name nulls last;
+
+-- case when and group by
+-- how many products for each segment?
+select
+  case 
+    when product_name like '%Cat%' then 'Cat'
+    when product_name like '%Dog%' then 'Dog'
+    else 'Other'
+  end as segment_name,
+  count(*) as product_count
+from `wisdom_pets.products`
+group by segment_name
+order by segment_name;
+
+/*
+how many products are between the price bands of:
+$1 to $5
+$5 to $10
+$10 to $25
+$25+
+*/
+-- this is for checking the logic
+select
+   retail_price,
+   case
+    when retail_price between 1 and 5
+      then '$1 to $5'
+    when retail_price > 5 and retail_price <= 10
+      then '$5 to $10'
+    when retail_price > 10 and retail_price <= 25
+      then '$10 to $25'
+    when retail_price > 25
+      then '$25+'
+  end as price_band
+from `wisdom_pets.products`;
+
+/*
+how many products are between the price bands of:
+$1 to $5
+$5 to $10
+$10 to $25
+$25+
+*/
+select
+   case
+    when retail_price between 1 and 5
+      then '$1 to $5'
+    when retail_price > 5 and retail_price <= 10
+      then '$5 to $10'
+    when retail_price > 10 and retail_price <= 25
+      then '$10 to $25'
+    when retail_price > 25
+      then '$25+'
+  end as price_band,
+  count(*) as product_count
+from `wisdom_pets.products`
+group by price_band;
+
+
+-- countif function
+-- excel-style transforms in bigquery
+-- countif as case when logic
+-- assign a 1/0 flag for dog products
+select
+  product_name,
+  case
+    when product_name like '%Dog%'
+      then 1
+    else 0
+  end as dog_product_flag
+from `wisdom_pets.products`
+order by dog_product_flag desc;
+
+
+
+
+
+
+-- sum case when counts
+-- sum the 1/0 flag for count of dog products
+select
+  sum(
+    case 
+      when product_name like '%Dog%'
+        then 1
+      else 0
+    end
+  ) as dog_product_count
+from `wisdom_pets.products`;
+
+
+
+
+-- sum case when and group by 
+-- count dog products for each category
+select
+  category_name,
+  sum(
+    case 
+      when product_name like '%Dog%'
+        then 1
+      else 0
+    end
+  ) as dog_product_count
+from `wisdom_pets.products`
+group by category_name
+order by dog_product_count desc;
+
+
+-- bigquery countif function
+select
+  category_name,
+  countif(product_name like '%Dog%') as dog_product_count
+from `wisdom_pets.products`
+group by category_name
+order by dog_product_count desc;
+
+
+-- multiple countif functions
+-- count both dog and cat products for each category
+select
+  category_name,
+  countif(product_name like '%Dog%') as dog_product_count,
+  countif(product_name like '%Cat%') as cat_product_count,
+from `wisdom_pets.products`
+group by category_name
+order by category_name;
+-- countif is not available in all sql dialects
+
+
+-- countif example
+-- for each category, caluclate these metrics:
+-- how many five-star dog products are there?
+-- how many four-star cat products are there?
+select
+  category_name,
+  countif(rating = 5 and product_name like '%Dog%') as dog_products_5_star,
+  countif(rating = 4 and product_name like '%Cat%') as cat_products_4_star
+from `wisdom_pets.products`
+group by category_name;
+
+
+-- with clause for CTES
+with cte_pivot_data as (
+  select
+    category_name,
+    case 
+      when product_name like '%Cat%' then 'Cat'
+      when product_name like '%Dog%' then 'Dog'
+      else 'Other'
+    end as segment_name,
+    avg(rating) as avg_rating,
+    count(*) as product_count
+from `wisdom_pets.products`
+group by category_name, segment_name
+order by category_name, segment_name)
+select * from cte_pivot_data;
+-- best practice:
+-- avoid using order by within cte steps
+
+-- challenge
+-- bigquery financial analysis
+-- 1. top three products:
+-- which top three product IDs are the best-selling based on the total_amount field?
+select
+  product_id,
+  sum(total_amount) as total_sales
+from `wisdom_pets.sales`
+group by product_id
+order by total_sales desc
+limit 3;
+
+
+-- 2. product sales by percentage:
+-- what are the total sales and percentage breakdown by transaction_type?
+-- let's look at transaction_type
+select
+  transaction_type,
+  count(*) as record_count
+from`wisdom_pets.sales`
+group by transaction_type;
+
+-- now let's solve our challenge
+with cte as (
+select
+  transaction_type,
+  sum(total_amount) as total_sales,
+  sum(sum(total_amount)) over() as overall_sales
+from`wisdom_pets.sales`
+group by transaction_type
+)
+select 
+  transaction_type,
+  total_sales,
+  round(total_sales / overall_sales,2) as percentage_breakdown
+from cte;
