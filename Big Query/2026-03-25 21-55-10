@@ -1,0 +1,96 @@
+https://console.cloud.google.com/bigquery?sq=676844025892:a74a5c581596414dab0c9bdcf1421caf
+
+
+
+/*
+how many products are between the price bands of:
+$1 to $5
+$5 to $10
+$10 to $25
+$25+
+*/
+SELECT
+  CASE
+    WHEN retail_price BETWEEN 1 AND 5 THEN '$1 to $5'
+    WHEN retail_price > 5 AND retail_price <= 10 THEN '$5 to $10'
+    WHEN retail_price > 10 AND retail_price <= 25 THEN '$10 to $25'
+    WHEN retail_price > 25 THEN '$25+'
+    END AS price_band,
+  COUNT(*) AS product_count
+FROM `wisdom_pets.products`
+GROUP BY price_band;
+
+-- countif function
+-- excel-style transforms in bigquery
+-- countif as case when logic
+-- assign a 1/0 flag for dog products
+SELECT
+  product_name,
+  CASE WHEN product_name LIKE '%Dog%' THEN 1 ELSE 0 END AS dog_product_flag
+FROM `wisdom_pets.products`
+ORDER BY dog_product_flag DESC;
+
+-- sum case when counts
+-- sum the 1/0 flag for count of dog products
+SELECT
+  sum(
+    CASE WHEN product_name LIKE '%Dog%' THEN 1 ELSE 0 END) AS dog_product_count
+FROM `wisdom_pets.products`;
+
+-- sum case when and group by
+-- count dog products for each category
+SELECT
+  category_name,
+  sum(
+    CASE WHEN product_name LIKE '%Dog%' THEN 1 ELSE 0 END) AS dog_product_count
+FROM `wisdom_pets.products`
+GROUP BY category_name
+ORDER BY dog_product_count DESC;
+
+-- bigquery countif function
+SELECT
+  category_name,
+  countif(product_name LIKE '%Dog%') AS dog_product_count
+FROM `wisdom_pets.products`
+GROUP BY category_name
+ORDER BY dog_product_count DESC;
+
+-- multiple countif functions
+-- count both dog and cat products for each category
+SELECT
+  category_name,
+  countif(product_name LIKE '%Dog%') AS dog_product_count,
+  countif(product_name LIKE '%Cat%') AS cat_product_count
+FROM `wisdom_pets.products`
+GROUP BY category_name
+ORDER BY category_name;
+
+-- countif example
+-- for each category, caluclate these metrics:
+-- how many five-star dog products are there?
+-- how many four-star cat products are there?
+SELECT
+  category_name,
+  countif(rating = 5 AND product_name LIKE '%Dog%') AS dog_product_5_star,
+  countif(rating = 4 AND product_name LIKE '%Cat%') AS cat_product_4_star
+FROM `wisdom_pets.products`
+GROUP BY category_name
+ORDER BY category_name;
+
+-- cte
+WITH
+  cte_pivot_data AS (
+    SELECT
+      category_name,
+      CASE
+        WHEN product_name LIKE '%Cat%' THEN 'Cat'
+        WHEN product_name LIKE '%Dog%' THEN 'Dog'
+        ELSE 'Other'
+        END AS segment_name,
+      avg(rating) AS avg_rating,
+      COUNT(*) AS product_count
+    FROM `wisdom_pets.products`
+    GROUP BY category_name, segment_name
+    ORDER BY category_name, segment_name
+  )
+SELECT * FROM cte_pivot_data;
