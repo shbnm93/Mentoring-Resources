@@ -1,0 +1,148 @@
+-- table joins
+
+-- bigquery join operations:
+-- cross join
+-- inner join
+-- left join and left outer join
+-- full join and full outer join
+-- right join and right outer join
+
+-- table join basics:
+-- there are two sides to every basic join
+-- the left side is also known as the base table
+-- the right side is also known as the target table
+-- all table joins need a join condition(Except cross join)
+-- be very careful of duplicates on both sides of the join
+
+
+-- cross join:
+-- cartesian product of all rows from both sides of the join
+-- only join that does not need a join condition
+-- most computationally expensive join
+
+
+-- inner join:
+-- only returns rows that meet the join condition
+-- effectively performs a cross join and keeps matching records, but is more efficient
+
+
+-- left (outer) join:
+-- returns all rows from the left and matched rows from the right
+-- missing records from the right will return null  
+
+
+-- right (outer) join:
+-- returns all rows from the right and matched rows from the left
+-- missing records from the left will return null
+-- rarely used in reality, use left join instead
+
+
+
+-- full (outer) join:
+-- returns all rows from both left and right, whether they meet the join condition or not
+-- rows are merged using the join condition
+-- missing values from either side of the join will be null  
+
+
+
+-- let's dive into inner join:
+-- which products have the most total sales? return the product name, category, sales, and quantity?
+
+select
+  products.product_name,
+  products.category_name,
+  sum(sales.total_amount) as total_sales,
+  sum(sales.quantity) as total_quantity
+from `wisdom_pets.sales` as sales
+inner join `wisdom_pets.products` as products
+  on sales.product_id = products.product_id
+group by 
+  products.product_name,
+  products.category_name
+order by total_sales desc;
+
+
+
+-- now let's look at another common bigquery join, left joins:
+-- what are the total sales for retail vs.wholesale customers?
+-- are there any transactions from unregistered customers?
+select
+  case
+    when customers.business_name is null
+      then 'Retail'
+    when customers.business_name is not null
+      then 'Wholesale'
+    else null
+  end customer_type,
+  case 
+    when customers.customer_id is null 
+      then 'unregistered'
+    when customers.customer_id is not null 
+      then 'registered'
+    else null
+    end as registration_status,
+  sum(sales.total_amount) as total_sales
+from `wisdom_pets.sales` as sales
+left join `wisdom_pets.customers` as customers
+  on sales.customer_id = customers.customer_id
+group by customer_type, registration_status;
+
+-- challenges:
+-- 1- average transactions:
+-- what are the average transaction sizes for wholesale and retail transaction types, split by customer VIP status?
+with cte_transaction_size as (
+select
+  sales.transaction_type,
+  sales.transaction_id,
+  customers.vip_customer_flag,
+  sum(sales.total_amount) as transaction_size
+from `wisdom_pets.sales` as sales
+inner join `wisdom_pets.customers` as customers
+  on sales.customer_id = customers.customer_id
+group by
+  sales.transaction_type,
+  sales.transaction_id,
+  customers.vip_customer_flag
+)
+select 
+  transaction_type,
+  vip_customer_flag,
+  avg(transaction_size) as avg_transaction_size
+from cte_transaction_size
+group by transaction_type,vip_customer_flag;
+
+
+
+-- 2- total discount:
+-- what is the total discount amount for all wholesale transactions?
+
+with cte_product_discount as (
+select
+  sales.product_id,
+  sales.quantity,
+  products.retail_price * (products.wholesale_discount_percentage/100) as discount_amount_per_unit
+from `wisdom_pets.sales` as sales
+inner join `wisdom_pets.products` as products
+  on sales.product_id = products.product_id
+where transaction_type = 'Wholesale'
+)
+select 
+  sum(quantity * discount_amount_per_unit) as total_discount_amount
+from cte_product_discount;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
