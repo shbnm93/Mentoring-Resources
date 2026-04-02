@@ -1,0 +1,110 @@
+-- 1. top three products:
+-- which top three product IDs are the best-selling based on the total_amount field?
+SELECT
+  product_id,
+  sum(total_amount) AS total_sales
+FROM `wisdom_pets.sales`
+GROUP BY product_id
+ORDER BY total_sales DESC
+LIMIT 3;
+
+-- 2. product sales by percentage:
+-- what are the total sales and percentage breakdown by transaction_type?
+SELECT DISTINCT transaction_type FROM `wisdom_pets.sales`;
+
+SELECT
+  transaction_type,
+  COUNT(*) AS record_count
+FROM `wisdom_pets.sales`
+GROUP BY transaction_type;
+
+WITH
+  cte AS (
+    SELECT
+      transaction_type,
+      sum(total_amount) AS total_sales,
+      sum(sum(total_amount)) OVER () AS overall_sales
+    FROM `wisdom_pets.sales`
+    GROUP BY transaction_type
+  )
+SELECT
+  transaction_type,
+  total_sales,
+  round(total_sales / overall_sales, 2) AS percentage_breakdown
+FROM cte;
+
+-- inner join
+-- which products have the most total sales? return the product name, category, sales, and quantity?
+SELECT
+  products.product_name,
+  products.category_name,
+  sum(sales.total_amount) AS total_sales,
+  sum(sales.quantity) AS total_quantity
+FROM `wisdom_pets.sales` AS sales
+INNER JOIN `wisdom_pets.products` AS products
+  ON sales.product_id = products.product_id
+GROUP BY
+  products.product_name,
+  products.category_name
+ORDER BY total_sales DESC;
+
+
+
+
+
+
+
+
+-- left join
+-- what are the total sales for retail vs.wholesale customers?
+-- are there any transactions from unregistered customers?
+select distinct business_name from `wisdom_pets.customers`;
+select
+  case when customers.business_name is null then 'Retail'
+        when customers.business_name is not null then 'Wholesale' else null
+  end as customer_type,
+  case when customers.customer_id is null then 'unregistered'
+        when customers.customer_id is not null then 'registered' else null
+  end as registration_status,
+  sum(sales.total_amount) as total_sales
+from `wisdom_pets.sales` as sales
+left join `wisdom_pets.customers` as customers
+  on sales.customer_id = customers.customer_id
+group by customer_type, registration_status;
+
+
+
+-- students offer
+SELECT 
+  CASE 
+    WHEN c.customer_id IS NULL THEN 'unregistered'
+    WHEN c.business_name IS NULL THEN 'retail'
+    ELSE 'wholesale'
+  END AS customer_type,
+  SUM(s.total_amount) AS total_sales,
+  COUNT(*) AS transaction_count
+FROM `wisdom_pets.sales` s
+LEFT JOIN `wisdom_pets.customers` c
+  ON s.customer_id = c.customer_id
+GROUP BY customer_type
+ORDER BY total_sales DESC;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
