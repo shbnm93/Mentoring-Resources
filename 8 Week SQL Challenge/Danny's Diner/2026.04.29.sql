@@ -6,7 +6,7 @@ select * from dannys_diner_menu ddm
 
 select * from dannys_diner_sales dds 
 
---What is the total amount each customer spent at the restaurant?
+--1. What is the total amount each customer spent at the restaurant?
 select
 	dds.customer_id,
 	sum(ddm.price) as total_sales
@@ -15,7 +15,7 @@ left join dannys_diner_menu ddm on dds.product_id = ddm.product_id
 group by dds.customer_id 
 order by dds.customer_id;
 
---How many days has each customer visited the restaurant?
+--2. How many days has each customer visited the restaurant?
 select
 	customer_id,
 	count(distinct order_date) as visit_count
@@ -24,7 +24,7 @@ group by customer_id;
 
 
 
---What was the first item from the menu purchased by each customer?
+--3. What was the first item from the menu purchased by each customer?
 --samime hanim
 select
 	dds.customer_id,
